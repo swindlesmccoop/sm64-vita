@@ -12,6 +12,8 @@
 
 #include "gfx/gfx_pc.h"
 #include "gfx/gfx_opengl.h"
+#include "gfx/gfx_vitagl.h"
+#include "gfx/gfx_vita.h"
 #include "gfx/gfx_direct3d11.h"
 #include "gfx/gfx_direct3d12.h"
 #include "gfx/gfx_dxgi.h"
@@ -23,6 +25,7 @@
 #include "audio/audio_pulse.h"
 #include "audio/audio_alsa.h"
 #include "audio/audio_sdl.h"
+#include "audio/audio_vita.h"
 #include "audio/audio_null.h"
 
 #include "controller/controller_keyboard.h"
@@ -165,6 +168,9 @@ void main_func(void) {
     #else
         wm_api = &gfx_sdl;
     #endif
+#elif defined(TARGET_VITA)
+    rendering_api = &gfx_vitagl_api;
+    wm_api = &gfx_vita;
 #endif
 
     gfx_init(wm_api, rendering_api, "Super Mario 64 PC-Port", configFullscreen);
@@ -190,6 +196,11 @@ void main_func(void) {
 #ifdef TARGET_WEB
     if (audio_api == NULL && audio_sdl.init()) {
         audio_api = &audio_sdl;
+    }
+#endif
+#ifdef TARGET_VITA
+    if (audio_api == NULL && audio_vita.init()) {
+        audio_api = &audio_vita;
     }
 #endif
     if (audio_api == NULL) {
